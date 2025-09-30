@@ -50,12 +50,17 @@ const profileFormSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
+interface ProfileFormProps {
+  defaultValues?: Partial<ProfileFormValues>;
+}
+
 // Default form values
-const defaultValues: Partial<ProfileFormValues> = {
+const defaultFormValues: Partial<ProfileFormValues> = {
   birthTime: '12:00',
   timezoneOffset: new Date().getTimezoneOffset() / -60, // Default to user's current timezone
   birthPlace: '',
   about: '',
+  gender: 'other' as const,
 };
 
 // Timezone options with common GMT offsets
@@ -89,10 +94,13 @@ const timezoneOptions = [
   { value: 14, label: 'GMT+14:00' },
 ];
 
-export function ProfileForm() {
+export function ProfileForm({ defaultValues }: ProfileFormProps) {
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
-    defaultValues,
+    defaultValues: {
+      ...defaultFormValues,
+      ...defaultValues,
+    },
     mode: 'onChange',
   });
 
