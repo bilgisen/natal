@@ -11,6 +11,7 @@ import { Polar } from "@polar-sh/sdk";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
+import { admin } from "better-auth/plugins";
 
 // Utility function to safely parse dates
 function safeParseDate(value: string | Date | null | undefined): Date | null {
@@ -186,6 +187,16 @@ export const auth = betterAuth({
           },
         }),
       ],
+    }),
+    admin({
+      // Optional: Configure admin options here
+      // defaultRole: "user",
+      // adminRoles: ["admin"],
+      // adminUserIds: ["user-id-1", "user-id-2"],
+      // impersonationSessionDuration: 60 * 60, // 1 hour
+      // defaultBanReason: "No reason",
+      // defaultBanExpiresIn: 60 * 60 * 24 * 7, // 1 week
+      // bannedUserMessage: "You have been banned from this application."
     }),
     nextCookies(),
   ],
