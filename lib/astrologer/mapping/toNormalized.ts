@@ -90,6 +90,9 @@ export async function toNormalizedData(
     .filter((key) => birthData[key as keyof BirthData])
     .map((key) => {
       const p = birthData[key as keyof BirthData];
+      if (!p || typeof p !== 'object' || !('name' in p)) {
+        throw new Error(`Invalid planet data for key: ${key}`);
+      }
       const houseNum = p.house ? parseInt(String(p.house).replace('House_', '')) : 0;
       return {
         planetName: p.name,
@@ -121,6 +124,9 @@ export async function toNormalizedData(
 
   const houses = houseKeys.map((key, i) => {
     const h = birthData[key as keyof BirthData];
+    if (!h || typeof h !== 'object' || !('name' in h)) {
+      throw new Error(`Invalid house data for key: ${key}`);
+    }
     return {
       houseNumber: i + 1,
       sign: h.sign,
