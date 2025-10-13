@@ -1,8 +1,7 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { SectionCards } from "./_components/section-cards";
-import { ChartAreaInteractive } from "./_components/chart-interactive";
+import TokenUsageWidgetPremium from "@/components/dashboard/TokenUsageWidgetPremium";
 
 export default async function Dashboard() {
   const result = await auth.api.getSession({
@@ -26,8 +25,11 @@ export default async function Dashboard() {
         </div>
         <div className="@container/main flex flex-1 flex-col gap-2">
           <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-            <SectionCards />
-            <ChartAreaInteractive />
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <TokenUsageWidgetPremium />
+
+            </div>
+
           </div>
         </div>
       </div>

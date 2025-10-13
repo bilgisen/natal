@@ -1,26 +1,24 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  reactStrictMode: false,
-  typescript: {
-    ignoreBuildErrors: true,
+  experimental: {
   },
   images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "pub-6f0cf05705c7412b93a792350f3b3aa5.r2.dev",
-      },
-      {
-        protocol: "https",
-        hostname: "jdj14ctwppwprnqu.public.blob.vercel-storage.com",
-      },
-      {
-        protocol: "https",
-        hostname: "images.unsplash.com",
-      },
-    ],
+    qualities: [75, 85, 90, 95, 100],
+  },
+  webpack: (config, { isServer }) => {
+    // Exclude ioredis from client-side bundles
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        dns: false,
+        net: false,
+        tls: false,
+        fs: false,
+        ioredis: false,
+      };
+    }
+    return config;
   },
 };
 

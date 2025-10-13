@@ -1,3 +1,4 @@
+// components/user-profile.tsx
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,7 +14,7 @@ import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface UserInfo {
   id: string;

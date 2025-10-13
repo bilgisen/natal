@@ -1,124 +1,98 @@
-import {
-  Shadcnui,
-  TailwindCSS,
-  BetterAuth,
-  Polar,
-  NeonPostgres,
-  Nextjs,
-} from "@/components/logos";
-import { Card } from "@/components/ui/card";
-import * as React from "react";
+"use client";
 
-export default function Integrations() {
+import Image from "next/image";
+import { motion } from "framer-motion";
+
+const features = [
+  {
+    title: "Unlock Your Cosmic Blueprint: Let's Analyze Your Birth Data",
+    details:
+      "Start by entering your date, time, and place of birth. We use the scientifically robust Swiss Ephemeris to precisely map your complete astrological data—including planetary positions, houses, Ascendant, nodes, and Moon phase—for an unparalleled foundation.",
+    image: "/03.jpg",
+  },
+  {
+    title: "Meet Your Cosmic Twin: AI Deep-Dives Your Astro-Profile",
+    details:
+      "Our advanced Artificial Intelligence takes your comprehensive astrological dataset, analyzes the complex relationships and aspects between every single component, and synthesizes it all to generate your unique, detailed astrological profile.",
+    image: "/01.jpg",
+  },
+  {
+    title: "Ask the Cosmos: Get Personalized Answers from Gemini AI",
+    details:
+      "The power of Google Gemini is now at your service. It not only generates your in-depth chart analysis but also uses your specific astrological data to provide detailed, nuanced, and insightful answers to all your burning cosmic questions.",
+    image: "/04.jpg",
+  },
+  {
+    title: "Share the Stars: Analyze Profiles of Loved Ones",
+    details:
+      "Astrology is better together! Go beyond just your own chart. Easily input the birth details of your family and friends to generate their comprehensive profiles and gain deeper understanding of your most important relationships.",
+    image: "/06.jpg",
+  },
+  {
+    title: "Your Daily Cosmic Guide: Receive Truly Personal Horoscopes",
+    details:
+      "Forget generic forecasts. Our AI leverages your unique astrological birth data alongside the current transits and planetary movements to craft daily, weekly, or monthly horoscopes that are generated just for you.",
+    image: "/07.jpg",
+  },
+];
+
+const Features = () => {
   return (
-    <section>
-      <div className="pt-12 pb-32">
-        <div className="mx-auto max-w-5xl px-6">
-          <div>
-            <h2 className="text-balance text-3xl font-semibold md:text-4xl">
-              Built with the best tools
-            </h2>
-            <p className="text-muted-foreground mt-3 text-lg">
-              Launch your project with confidence, knowing that you&apos;re
-              using the best tools available.
-            </p>
-          </div>
+    <section className="min-h-screen flex items-center justify-center bg-background">
+      <div className="max-w-5xl w-full py-16 px-6">
+        <motion.h3
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-2xl text-primary uppercase tracking-[-0.03em] text-center"
+        >
+          How It Works
+        </motion.h3>
+        <motion.h2
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-4xl md:text-[2.75rem] font-semibold tracking-[-0.03em] text-center"
+        >
+          Your Journey to Cosmic Clarity
+        </motion.h2>
 
-          <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <IntegrationCard
-              title="Next.js"
-              description="The React framework for production with App Router, Server Components, and built-in optimizations."
-              link="https://nextjs.org"
+        <div className="mt-16 space-y-24">
+          {features.map((feature, index) => (
+            <motion.div
+              key={feature.title}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, delay: index * 0.1 }}
+              className={`flex flex-col md:flex-row items-center gap-x-12 gap-y-8 ${
+                index % 2 === 1 ? "md:flex-row-reverse" : ""
+              }`}
             >
-              <Nextjs />
-            </IntegrationCard>
+              <div className="w-full md:w-1/2">
+                <div className="overflow-hidden rounded-2xl shadow-lg border border-border/50">
+                  <Image
+                    src={feature.image}
+                    alt={feature.title}
+                    width={800}
+                    height={600}
+                    className="object-cover aspect-[4/3] hover:scale-105 transition-transform duration-700"
+                  />
+                </div>
+              </div>
 
-            <IntegrationCard
-              title="Better Auth"
-              description="Modern authentication library with session management, OAuth providers, and security features."
-              link="https://better-auth.com"
-            >
-              <BetterAuth />
-            </IntegrationCard>
-
-            <IntegrationCard
-              title="Neon Postgres"
-              description="Serverless PostgreSQL database with branching, autoscaling, and modern developer experience."
-              link="https://neon.tech"
-            >
-              <NeonPostgres />
-            </IntegrationCard>
-
-            <IntegrationCard
-              title="Polar.sh"
-              description="Developer-first subscription platform with webhooks, customer portal, and usage-based billing."
-              link="https://polar.sh"
-            >
-              <Polar />
-            </IntegrationCard>
-
-            <IntegrationCard
-              title="Tailwind CSS"
-              description="Utility-first CSS framework for rapid UI development with consistent design tokens."
-              link="https://tailwindcss.com"
-            >
-              <TailwindCSS />
-            </IntegrationCard>
-
-            <IntegrationCard
-              title="shadcn/ui"
-              description="Beautiful, accessible components built with Radix UI primitives and styled with Tailwind CSS."
-              link="https://ui.shadcn.com"
-            >
-              <Shadcnui />
-            </IntegrationCard>
-          </div>
+              <div className="w-full md:w-1/2 text-center md:text-left">
+                <h4 className="text-3xl font-semibold leading-snug">
+                  {feature.title}
+                </h4>
+                <p className="mt-4 text-lg text-muted-foreground">{feature.details}</p>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
   );
-}
-
-const IntegrationCard = ({
-  title,
-  description,
-  children,
-  link,
-}: {
-  title: string;
-  description: string;
-  children: React.ReactNode;
-  link?: string;
-}) => {
-  const CardContent = () => (
-    <div className="relative">
-      <div className="*:size-10">{children}</div>
-
-      <div className="mt-6 space-y-1.5">
-        <h3 className="text-lg font-semibold">{title}</h3>
-        <p className="text-muted-foreground line-clamp-2">{description}</p>
-      </div>
-    </div>
-  );
-
-  if (link) {
-    return (
-      <a
-        href={link}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="block transition-transform hover:scale-105"
-      >
-        <Card className="p-6 h-full cursor-pointer hover:shadow-lg transition-shadow rounded-md">
-          <CardContent />
-        </Card>
-      </a>
-    );
-  }
-
-  return (
-    <Card className="p-6">
-      <CardContent />
-    </Card>
-  );
 };
+
+export default Features;

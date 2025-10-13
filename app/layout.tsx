@@ -1,14 +1,16 @@
-import { Toaster } from "@/components/ui/sonner";
 import type { Metadata } from "next";
 import { ThemeProvider } from "../components/provider";
-import "./globals.css";
+import { QueryProvider } from "@/components/providers/query-provider";
+import { Toaster } from "@/components/ui/sonner";
 import { Analytics } from "@vercel/analytics/next";
+import "./globals.css";
+
 export const metadata: Metadata = {
-  title: "Next.js Starter Kit - Launch Your SAAS",
+  title: "Horozz - ",
   description:
     "A modern, full-stack Next.js starter kit with authentication, payments, and dashboard. Built with TypeScript, Tailwind CSS, and shadcn/ui.",
   openGraph: {
-    title: "Next.js Starter Kit",
+    title: "Horooz.com",
     description:
       "A modern, full-stack Next.js starter kit with authentication, payments, and dashboard. Built with TypeScript, Tailwind CSS, and shadcn/ui.",
     url: "nextstarter.xyz",
@@ -26,6 +28,10 @@ export const metadata: Metadata = {
   },
 };
 
+// This is a Server Component by default in Next.js 13+
+// We don't need 'use client' here because we want this to be a Server Component
+// Client components will be imported and used within this component
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -33,16 +39,24 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`font-[-apple-system,BlinkMacSystemFont]antialiased`}>
+      <head>
+        <script
+          src="https://accounts.google.com/gsi/client"
+          async
+          defer
+        ></script>
+      </head>
+      <body>
         <ThemeProvider
           attribute="class"
-          defaultTheme="light"
+          defaultTheme="dark"
           enableSystem
-          forcedTheme="light"
           disableTransitionOnChange
         >
-          {children}
-          <Toaster />
+          <QueryProvider>
+            {children}
+          </QueryProvider>
+          <Toaster position="top-center" />
           <Analytics />
         </ThemeProvider>
       </body>

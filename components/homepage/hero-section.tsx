@@ -1,58 +1,70 @@
-import { Button } from "@/components/ui/button";
+"use client";
+
+import { motion } from "framer-motion";
 import Image from "next/image";
-import Link from "next/link";
+import { Meteors } from "@/components/ui/meteors";
 
-export default function HeroSection() {
+export default function SpaceHero() {
   return (
-    <section className="py-20">
-      <div className="relative z-10 mx-auto w-full max-w-2xl px-6 lg:px-0">
-        <div className="relative text-center">
-          <p className="text-3xl">🔥</p>
-          <h1 className="mx-auto mt-12 max-w-xl text-balance text-5xl font-medium">
-            Nextjs Starter Kit
-          </h1>
-          <p className="text-muted-foreground mx-auto mb-6 mt-4 text-balance text-xl">
-            This powerful starter kit is designed to help you launch your SAAS
-            application quickly and efficiently.
-          </p>
-          <div className="flex flex-col items-center gap-2 *:w-full sm:flex-row sm:justify-center sm:*:w-auto">
-            <Button asChild variant="default" size="sm">
-              <Link href="/dashboard" prefetch={true}>
-                <span className="text-nowrap">Get Started</span>
-              </Link>
-            </Button>
-            <Button asChild variant="outline" size="sm">
-              <Link
-                href="https://github.com/michaelshimeles/nextjs-starter-kit"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <span className="text-nowrap">Github</span>
-              </Link>
-            </Button>
-          </div>
-        </div>
-
-        <div className="relative mt-8 overflow-hidden rounded-3xl bg-black/10">
-          <Image
-            src="https://images.unsplash.com/photo-1547623641-d2c56c03e2a7?q=80&w=3087&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-            alt=""
-            className="absolute inset-0 size-full object-cover"
-            width={1920}
-            height={1080}
-          />
-
-          <div className="bg-background rounded-(--radius) relative m-4 overflow-hidden border border-transparent shadow-xl shadow-black/15 ring-1 ring-black/10 sm:m-8 md:m-12">
-            <Image
-              src="https://jdj14ctwppwprnqu.public.blob.vercel-storage.com/GsZRNq5WsAAMbrG-H9YrPK4HJnXSQV692jECFST4zyYpva.jpg"
-              alt="app screen"
-              width="2880"
-              height="1842"
-              className="object-top-left size-full object-cover"
-            />
-          </div>
-        </div>
+    <section className="relative h-screen w-full overflow-hidden">
+      {/* Background Image */}
+      <div className="absolute inset-0 -z-20">
+        <Image
+          src="/milkyway.jpeg" // kendi görselini buraya koy
+          alt="Cosmic background"
+          fill
+          className="object-cover opacity-60"
+          priority
+          quality={85}
+        />
       </div>
+
+      {/* Meteor Effect */}
+      <div className="absolute inset-0 -z-10">
+        <Meteors number={35} />
+      </div>
+
+      {/* Hero Content */}
+      <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-muted-foreground px-6">
+        <motion.h3
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-md md:text-xl text-foreground tracking-wider mb-3"
+        >
+          Welcome to natalai
+        </motion.h3>
+
+        <motion.h1
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 1 }}
+          className="text-4xl md:text-6xl font-bold text-foreground leading-tight/60 letter-spacing-tight max-w-5xl"
+        >
+          Where astrology meets science: your cosmic data, analysed by AI
+        </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 1 }}
+          className="mt-6 text-2xl md:text-xl max-w-4xl mx-auto"
+        >
+          Discover a new era of astrology powered by precision and intelligence. Your birth chart is generated with the scientifically trusted Swiss Ephemeris and analysed by AI to reveal personalised insights. 
+        </motion.p>
+
+        <motion.button
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1, duration: 1 }}
+          className="mt-10 px-8 py-3 bg-primary hover:bg-primary/80 rounded-full text-white font-medium text-lg shadow-lg shadow-primary/30 transition-all duration-300"
+        >
+          Try for Free
+        </motion.button>
+      </div>
+
+      {/* Optional subtle overlay gradient */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60 -z-10" />
     </section>
   );
 }

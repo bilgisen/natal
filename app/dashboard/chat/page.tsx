@@ -1,73 +1,62 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
-import { useChat } from "@ai-sdk/react";
-import Markdown from "react-markdown";
+import { useChat } from 'ai/react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Loader2 } from 'lucide-react';
 
-export default function Chat() {
-  const { messages, input, handleInputChange, handleSubmit } = useChat({
-    maxSteps: 10,
+export default function ChatPage() {
+  const { messages, input, handleInputChange, handleSubmit, isLoading, error } = useChat({
+    api: '/api/chat/google', // API endpoint
+    initialMessages: [
+      {
+        id: '1',
+        content: 'Merhaba! Size nasıl yardımcı olabilirim?',
+        role: 'assistant',
+      },
+    ],
   });
 
   return (
-    <div className="flex flex-col w-full py-24 justify-center items-center">
-      <div className="w-full max-w-xl space-y-4 mb-20">
-        {messages.map((message, i) => (
+    <div className="flex flex-col h-screen max-w-2xl mx-auto p-4">
+      <div className="flex-1 overflow-y-auto space-y-4 mb-4 p-4 border rounded-lg">
+        {messages.map((m) => (
           <div
-            key={message.id}
-            className={cn(
-              "flex",
-              message.role === "user" ? "justify-end" : "justify-start",
-            )}
+            key={m.id}
+            className={`p-4 rounded-lg ${
+              m.role === 'user'
+                ? 'bg-blue-100 dark:bg-blue-100 ml-8'
+                : 'bg-gray-100 dark:bg-gray-100 mr-8'
+            }`}
           >
-            <div
-              className={cn(
-                "max-w-[65%] px-3 py-1.5 text-sm shadow-sm",
-                message.role === "user"
-                  ? "bg-[#0B93F6] text-white rounded-2xl rounded-br-sm"
-                  : "bg-[#E9E9EB] text-black rounded-2xl rounded-bl-sm",
-              )}
-            >
-              {message.parts.map((part) => {
-                switch (part.type) {
-                  case "text":
-                    return (
-                      <div
-                        key={`${message.id}-${i}`}
-                        className="prose-sm prose-p:my-0.5 prose-li:my-0.5 prose-ul:my-1 prose-ol:my-1"
-                      >
-                        <Markdown>{part.text}</Markdown>
-                      </div>
-                    );
-                  default:
-                    return null;
-                }
-              })}
-            </div>
+            <div className="whitespace-pre-wrap">{m.content}</div>
           </div>
         ))}
+        {isLoading && (
+          <div className="flex justify-center p-4">
+            <Loader2 className="h-6 w-6 animate-spin" />
+          </div>
+        )}
       </div>
 
-      <form
-        className="flex gap-2 justify-center w-full items-center fixed bottom-0"
-        onSubmit={handleSubmit}
-      >
-        <div className="flex flex-col gap-2 justify-center items-start mb-8 max-w-xl w-full border p-2 rounded-lg bg-white ">
-          <Input
-            className="w-full border-0 shadow-none !ring-transparent "
-            value={input}
-            placeholder="Say something..."
-            onChange={handleInputChange}
-          />
-          <div className="flex justify-end gap-3 items-center w-full">
-            <Button size="sm" className="text-xs">
-              Send
-            </Button>
-          </div>
-        </div>
+      <form onSubmit={handleSubmit} className="flex gap-2">
+        <Input
+          value={input}
+          onChange={handleInputChange}
+          placeholder="Mesajınızı yazın..."
+          disabled={isLoading}
+          className="flex-1"
+        />
+        <Button type="submit" disabled={isLoading || !input.trim()}>
+          {isLoading ? 'Gönderiliyor...' : 'Gönder'}
+        </Button>
       </form>
+
+      {error && (
+        <div className="p-4 text-red-600 bg-red-100 rounded-lg mt-4">
+          Hata: {error.message}
+        </div>
+      )}
     </div>
   );
 }

@@ -1,3 +1,4 @@
+// lib/subscription.ts
 import { auth } from "@/lib/auth";
 import { db } from "@/db/drizzle";
 import { subscription } from "@/db/schema";
@@ -46,13 +47,13 @@ export async function getSubscriptionDetails(): Promise<SubscriptionDetailsResul
 
     // Get the most recent active subscription
     const activeSubscription = userSubscriptions
-      .filter((sub) => sub.status === "active")
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
+      .filter((sub: typeof subscription.$inferSelect) => sub.status === "active")
+      .sort((a: typeof subscription.$inferSelect, b: typeof subscription.$inferSelect) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
 
     if (!activeSubscription) {
       // Check for canceled or expired subscriptions
       const latestSubscription = userSubscriptions
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
+        .sort((a: typeof subscription.$inferSelect, b: typeof subscription.$inferSelect) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
 
       if (latestSubscription) {
         const now = new Date();

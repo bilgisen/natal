@@ -22,6 +22,69 @@
       "when": 1759235828421,
       "tag": "0002_normal_toxin",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1759426935619,
+      "tag": "0003_romantic_bloodstorm",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1759512929344,
+      "tag": "0004_flashy_freak",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1759576091401,
+      "tag": "0005_strange_green_goblin",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1759716259776,
+      "tag": "0006_nice_spencer_smythe",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1759717501405,
+      "tag": "0007_crazy_tempest",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1759758787270,
+      "tag": "0008_polite_killmonger",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1759966843544,
+      "tag": "0009_peaceful_turbo",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1759968591205,
+      "tag": "0010_left_millenium_guard",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1760116852315,
+      "tag": "0011_common_black_bird",
+      "breakpoints": true
     }
   ]
 }

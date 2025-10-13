@@ -1,3 +1,4 @@
+// lib/auth-client.ts
 import { createAuthClient } from "better-auth/react";
 import { organizationClient, adminClient } from "better-auth/client/plugins";
 import { polarClient } from "@polar-sh/better-auth";

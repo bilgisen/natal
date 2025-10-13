@@ -10,8 +10,9 @@ import {
   natalCharts,
   priorities,
   notifications,
-  aiPrompts,
   aiReports,
+  astrologicalData,
+  aiUsage,
 } from "./schema";
 
 // --- User relations ---
@@ -60,6 +61,10 @@ export const profilesRelations = relations(profiles, ({ one, many }) => ({
   }),
   priorities: many(priorities),
   natalCharts: many(natalCharts),
+  astrologicalData: one(astrologicalData, {
+    fields: [profiles.id],
+    references: [astrologicalData.profileId],
+  }),
 }));
 
 // --- BirthPlaces relations ---
@@ -71,7 +76,6 @@ export const birthPlacesRelations = relations(birthPlaces, ({ many }) => ({
 // --- AstrologySystems relations ---
 export const astrologySystemsRelations = relations(astrologySystems, ({ many }) => ({
   natalCharts: many(natalCharts),
-  aiPrompts: many(aiPrompts),
   aiReports: many(aiReports),
 }));
 
@@ -112,15 +116,6 @@ export const notificationsRelations = relations(notifications, ({ one }) => ({
   }),
 }));
 
-// --- AI Prompts relations ---
-export const aiPromptsRelations = relations(aiPrompts, ({ one, many }) => ({
-  system: one(astrologySystems, {
-    fields: [aiPrompts.systemId],
-    references: [astrologySystems.id],
-  }),
-  reports: many(aiReports),
-}));
-
 // --- AI Reports relations ---
 export const aiReportsRelations = relations(aiReports, ({ one }) => ({
   chart: one(natalCharts, {
@@ -131,8 +126,20 @@ export const aiReportsRelations = relations(aiReports, ({ one }) => ({
     fields: [aiReports.systemId],
     references: [astrologySystems.id],
   }),
-  prompt: one(aiPrompts, {
-    fields: [aiReports.promptId],
-    references: [aiPrompts.id],
+}));
+
+// --- AstrologicalData relations ---
+export const astrologicalDataRelations = relations(astrologicalData, ({ one }) => ({
+  profile: one(profiles, {
+    fields: [astrologicalData.profileId],
+    references: [profiles.id],
+  }),
+}));
+
+// --- AI Usage relations ---
+export const aiUsageRelations = relations(aiUsage, ({ one }) => ({
+  user: one(user, {
+    fields: [aiUsage.userId],
+    references: [user.id],
   }),
 }));
