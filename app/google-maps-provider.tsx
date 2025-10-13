@@ -40,9 +40,9 @@ export function GoogleMapsProvider({
   };
 
   // Move useMemo before any conditional returns
-  const loadScriptProps: LoadScriptProps = useMemo(() => {
+  const loadScriptProps: LoadScriptProps | null = useMemo(() => {
     if (!apiKey) {
-      throw new Error('Google Maps API key is required');
+      return null; // Return null instead of throwing during build time
     }
 
     return {
@@ -55,13 +55,12 @@ export function GoogleMapsProvider({
     };
   }, [apiKey, loadingFallback]);
 
-  // If no API key is provided, show an error in development
+  // If no API key is provided, render children without Google Maps during build time
   if (!apiKey) {
-    const error = new Error('Google Maps API key is not configured');
     if (process.env.NODE_ENV === 'development') {
-      console.error(error.message);
+      console.warn('Google Maps API key is not configured. Maps functionality will be disabled.');
     }
-    return errorFallback ? errorFallback(error) : <>{children}</>;
+    return <>{children}</>;
   }
 
   // If there was an error loading the script, show the error fallback
@@ -70,7 +69,7 @@ export function GoogleMapsProvider({
   }
 
   return (
-    <LoadScript {...loadScriptProps}>
+    <LoadScript {...loadScriptProps!}>
       {children}
     </LoadScript>
   );
