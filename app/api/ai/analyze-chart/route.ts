@@ -165,7 +165,7 @@ export async function POST(req: NextRequest) {
 
     // Build prompt via code-based templates (no DB needed)
     const detailLevel = (requestBody.options as { detailLevel?: string })?.detailLevel ?? 'basic';
-    const defaultTemplate = buildDefaultInsightsTemplate(detailLevel as 'basic' | 'detailed');
+    const defaultTemplate = buildDefaultInsightsTemplate();
 
     const planetsList = planetsArray.map((p) => `- ${p.name}: ${p.sign} (House ${p.house})`).join('\n');
     const housesList = houses.length
