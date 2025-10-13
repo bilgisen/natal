@@ -1,3 +1,4 @@
+// components/LoginModal.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -6,6 +7,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
+// Define the Google One Tap types
 interface GoogleOneTapConfig {
   client_id: string;
   callback: (response: GoogleCredentialResponse) => void;
@@ -26,93 +28,140 @@ interface GoogleOneTapNotification {
   getDismissedReason: () => string;
 }
 
-declare global {
-  interface Window {
-    google?: {
-      accounts: {
-        id: {
-          initialize: (config: GoogleOneTapConfig) => void;
-          prompt: (callback?: ((notification: GoogleOneTapNotification) => void) | undefined) => void;
-        };
-      };
-    };
-  }
-}
-
 interface GoogleCredentialResponse {
   credential: string;
   select_by: string;
 }
 
+// DO NOT declare 'google' on the Window interface here as it conflicts with better-auth.
+// If you need specific types for Google's API, consider using type assertions when accessing window.google.
+// declare global {
+//   interface Window {
+//     google?: {
+//       accounts: {
+//         id: {
+//           initialize: (config: GoogleOneTapConfig) => void;
+//           prompt: (callback?: (notification: GoogleOneTapNotification) => void) => void;
+//           renderButton: (element: HTMLElement, options: any) => void; // eslint-disable-line @typescript-eslint/no-explicit-any
+//         };
+//       };
+//     };
+//   }
+// }
+
 export default function LoginModal() {
-  const { data: session } = authClient.useSession();
-  const [open, setOpen] = useState(!session?.user);
+  const { data } = authClient.useSession(); // Get the full data object
+
+  // Check for session existence and specifically for a userId (or other identifying property)
+  // Replace 'userId' with the correct property name if different in your better-auth setup
+  const [open, setOpen] = useState(!data?.session?.userId); // Assuming session object has userId
 
   // Google One Tap integration
   useEffect(() => {
-    if (session?.user) return; // Already logged in
-    if (typeof window === "undefined") return;
+    if (data?.session?.userId) return; // Already logged in, based on corrected check
+    if (typeof window === "undefined") return; // Server-side check
 
-    window.onload = function () {
+    // Dynamically load the Google Identity Services script if not present
+    const scriptId = 'google-identity-services-script';
+    if (!document.getElementById(scriptId)) {
+      const script = document.createElement('script');
+      script.id = scriptId;
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.async = true;
+      script.defer = true;
+      script.onload = () => {
+        console.log('Google Identity Services script loaded.');
+        // Initialize after script is loaded
+        if (window.google?.accounts?.id) {
+          window.google.accounts.id.initialize({
+            client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
+            callback: handleCredentialResponse,
+            auto_select: true, // Auto show if user previously consented
+          });
+          // Note: prompt() might require user interaction in some browsers now
+          // Consider showing a button first, or calling prompt() on a user gesture
+          // window.google.accounts.id.prompt(); // Trigger the prompt
+        } else {
+          console.error('Google Identity Services failed to load correctly.');
+        }
+      };
+      script.onerror = () => {
+        console.error('Failed to load Google Identity Services script.');
+      };
+      document.head.appendChild(script);
+    } else {
+      // Script already exists, try to initialize if possible
       if (window.google?.accounts?.id) {
         window.google.accounts.id.initialize({
           client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
           callback: handleCredentialResponse,
-          auto_select: true, // Auto show if user previously consented
+          auto_select: true,
         });
-        window.google.accounts.id.prompt(); // Trigger the prompt
+        // window.google.accounts.id.prompt(); // Consider user gesture requirement
       }
-    };
-  }, [session]);
+    }
+
+  }, [data]); // Depend on data to re-run if session changes
+
 
   // Google One Tap response callback
-  const handleCredentialResponse = async (_response: GoogleCredentialResponse) => {
+  const handleCredentialResponse = async (response: GoogleCredentialResponse) => {
+    console.log("Received Google credential:", response.credential);
     // Google gives us only credential (JWT)
     // Trigger Better Auth popup login
-    await authClient.signIn.social(
-      {
-        provider: "google",
-        callbackURL: "/",
-      },
-      {
-        onRequest: () => {
-          console.log("Google One Tap login initiated");
+    try {
+      await authClient.signIn.social(
+        {
+          provider: "google",
+          callbackURL: "/",
         },
-        onResponse: () => {
-          console.log("Google One Tap login completed");
-          setOpen(false);
-        },
-        onError: (ctx) => {
-          console.error("Google One Tap login failed:", ctx.error);
-        },
-      }
-    );
+        {
+          onRequest: () => {
+            console.log("Google One Tap login initiated");
+          },
+          onResponse: () => {
+            console.log("Google One Tap login completed");
+            // setOpen(false); // State will update via useSession hook
+          },
+          onError: (ctx) => {
+            console.error("Google One Tap login failed:", ctx.error);
+          },
+        }
+      );
+    } catch (error) {
+      console.error("Error during Google One Tap sign-in:", error);
+    }
   };
 
   const handleManualLogin = async () => {
-    await authClient.signIn.social(
-      {
-        provider: "google",
-        callbackURL: "/",
-      },
-      {
-        onRequest: () => {
-          console.log("Manual Google login initiated");
+    try {
+      await authClient.signIn.social(
+        {
+          provider: "google",
+          callbackURL: "/",
         },
-        onResponse: () => {
-          console.log("Manual Google login completed");
-          setOpen(false);
-        },
-        onError: (ctx) => {
-          console.error("Manual Google login failed:", ctx.error);
-        },
-      }
-    );
+        {
+          onRequest: () => {
+            console.log("Manual Google login initiated");
+          },
+          onResponse: () => {
+            console.log("Manual Google login completed");
+            // setOpen(false); // State will update via useSession hook
+          },
+          onError: (ctx) => {
+            console.error("Manual Google login failed:", ctx.error);
+          },
+        }
+      );
+    } catch (error) {
+      console.error("Error during manual Google sign-in:", error);
+    }
   };
 
   return (
     <AnimatePresence>
-      {open && !session?.user && (
+      {/* Check for the correct session property, e.g., userId */}
+      {open && !data?.session?.userId && (
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogContent className="rounded-2xl sm:max-w-md">
             <motion.div
@@ -156,10 +205,8 @@ export default function LoginModal() {
                 </svg>
                 Sign in with Google
               </Button>
-              <div
-                id="g_id_onload"
-                data-client_id={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}
-              ></div>
+              {/* Optional: Container for the One Tap prompt if loaded dynamically */}
+              {/* <div id="g_id_onload" data-client_id={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}></div> */}
             </motion.div>
           </DialogContent>
         </Dialog>

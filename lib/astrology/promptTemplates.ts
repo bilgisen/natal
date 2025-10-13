@@ -25,8 +25,8 @@ export function renderTemplate(template: string, vars: PromptVariables): string 
   });
 }
 
-// Code-based default template for Astrology Insights (by detailLevel)
-export function buildDefaultInsightsTemplate(_detailLevel: 'basic' | 'detailed' = 'basic'): string {
+// Code-based default template for Astrology Insights
+export function buildDefaultInsightsTemplate(): string {
   // Currently same content for both; you can branch by detailLevel if needed later
   return [
     'You are an expert astrologer. Write a concise, insightful {{ detailLevel }} overview.',

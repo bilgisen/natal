@@ -31,7 +31,7 @@ interface DailyHoroscopeRequest {
 }
 
 // GET endpoint - fetches or generates daily horoscope with caching
-export async function GET(_req: NextRequest) {
+export async function GET() { 
   try {
     const cacheKey = `${HOROSCOPE_CACHE_KEY}:${getTodayDateString()}`;
     

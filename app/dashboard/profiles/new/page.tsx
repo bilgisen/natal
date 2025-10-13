@@ -14,7 +14,6 @@ export default function NewProfilePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(true);
-  const [session, setSession] = useState<{ user: { name?: string } } | null>(null);
   const [defaultValues, setDefaultValues] = useState<Partial<ProfileFormValues>>({
     displayName: '',
     birthDate: new Date(),
@@ -32,7 +31,6 @@ export default function NewProfilePage() {
         }
         
         if (sessionData.data) {
-          setSession(sessionData.data);
           const type = searchParams.get('type') || 'me';
           setDefaultValues(prev => ({
             ...prev,

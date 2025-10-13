@@ -1,12 +1,11 @@
-import { NextRequest } from "next/server";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { db } from "@/db/drizzle";
+import { db } from "@/lib/server-db"; // Import the direct db instance
 import { aiUsage, subscription } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { ensureUserQuota } from "@/lib/ai/update-user-quota";
 
-export async function GET(_req: NextRequest) {
+export async function GET() { 
   const session = await auth.api.getSession({ headers: await headers() });
   const userId = session?.user?.id;
   if (!userId) return Response.json({ error: "Unauthorized" }, { status: 401 });

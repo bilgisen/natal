@@ -5,6 +5,48 @@ import { profiles, birthPlaces } from '@/db/schema';
 import { and, eq } from 'drizzle-orm';
 import { headers } from 'next/headers';
 
+// Type definitions
+interface BirthPlace {
+  id: string;
+  city: string;
+  country: string;
+  lat: string;
+  lon: string;
+  tz: string;
+}
+
+interface AstrologicalData {
+  id: string;
+  chartData: unknown;
+  createdAt: Date;
+  profileId: string;
+  updatedAt: Date | null;
+}
+
+interface ProfileWithRelations {
+  id: string;
+  userId: string;
+  displayName: string | null;
+  birthDate: Date | null;
+  birthTime: string | null;
+  birthPlaceId: string | null;
+  birthPlace: BirthPlace | null;
+  gender: string | null;
+  profileCategory: string;
+  timezone: string;
+  createdAt: Date;
+  updatedAt: Date | null;
+  astrologicalData: AstrologicalData | null;
+}
+
+interface BirthPlaceData {
+  city: string;
+  country: string;
+  lat: string | number;
+  lng: string | number;
+  tz: string;
+}
+
 type Session = Awaited<ReturnType<typeof auth.api.getSession>>;
 
 // Helper to get the current user session
@@ -29,7 +71,6 @@ export async function GET(
   try {
     const session = await getCurrentSession();
 
-    // Use (getDb() as Database).query.profiles with explicit typing if needed
     const profile = await (getDb() as Database).query.profiles.findFirst({
       where: and(
         eq(profiles.id, params.profileId),
@@ -39,7 +80,7 @@ export async function GET(
         birthPlace: true,
         astrologicalData: true,
       }
-    }) as any;
+    }) as ProfileWithRelations | undefined;
 
     if (!profile) {
       return NextResponse.json(
@@ -53,16 +94,16 @@ export async function GET(
       ...profile,
       birthDate: profile.birthDate ? new Date(profile.birthDate).toISOString().split('T')[0] : null,
       birthPlace: profile.birthPlace ? {
-        id: (profile.birthPlace as any).id,
-        city: (profile.birthPlace as any).city,
-        country: (profile.birthPlace as any).country,
-        lat: (profile.birthPlace as any).lat,
-        lng: (profile.birthPlace as any).lon,
-        tz: (profile.birthPlace as any).tz
+        id: profile.birthPlace.id,
+        city: profile.birthPlace.city,
+        country: profile.birthPlace.country,
+        lat: profile.birthPlace.lat,
+        lng: profile.birthPlace.lon,
+        tz: profile.birthPlace.tz
       } : null,
       astrologicalData: profile.astrologicalData ? {
-        chartData: (profile.astrologicalData as any).chartData,
-        createdAt: (profile.astrologicalData as any).createdAt,
+        chartData: profile.astrologicalData.chartData,
+        createdAt: profile.astrologicalData.createdAt,
       } : null,
     };
 
@@ -82,6 +123,16 @@ export async function GET(
   }
 }
 
+// Define the request body type for profile updates
+interface UpdateProfileRequest {
+  displayName?: string;
+  birthDate?: string;
+  birthTime?: string;
+  gender?: string;
+  profileCategory?: string;
+  birthPlaceData?: BirthPlaceData;
+}
+
 // Handle both PUT and PATCH methods for updating profiles
 async function handleUpdateProfile(
   request: Request,
@@ -91,7 +142,7 @@ async function handleUpdateProfile(
   const params = await context.params;
   try {
     const session = await getCurrentSession();
-    const data = await request.json();
+    const data: UpdateProfileRequest = await request.json();
     
     // Check if profile exists and belongs to user
     const existingProfile = await (getDb() as Database).query.profiles.findFirst({
@@ -120,7 +171,7 @@ async function handleUpdateProfile(
       });
 
       if (existingPlace) {
-        birthPlaceId = (existingPlace as any).id;
+        birthPlaceId = existingPlace.id;
       } else {
         const [newPlace] = await (getDb() as Database)
           .insert(birthPlaces)
@@ -132,12 +183,12 @@ async function handleUpdateProfile(
             tz: data.birthPlaceData.tz || 'UTC',
           })
           .returning();
-        birthPlaceId = (newPlace as any).id;
+        birthPlaceId = newPlace.id;
       }
     }
 
     // Prepare update data
-    const baseData = {
+    const baseData: Partial<typeof profiles.$inferInsert> = {
       displayName: data.displayName,
       birthDate: data.birthDate,
       birthTime: data.birthTime || '00:00',
@@ -173,7 +224,7 @@ async function handleUpdateProfile(
         birthPlace: true,
         astrologicalData: true
       }
-    });
+    }) as ProfileWithRelations | undefined;
 
     if (!updatedProfileWithRelations) {
       throw new Error('Failed to fetch updated profile');
@@ -186,16 +237,16 @@ async function handleUpdateProfile(
         ? new Date(updatedProfileWithRelations.birthDate).toISOString().split('T')[0] 
         : null,
       birthPlace: updatedProfileWithRelations.birthPlace ? {
-        id: (updatedProfileWithRelations.birthPlace as any).id,
-        city: (updatedProfileWithRelations.birthPlace as any).city,
-        country: (updatedProfileWithRelations.birthPlace as any).country,
-        lat: (updatedProfileWithRelations.birthPlace as any).lat,
-        lng: (updatedProfileWithRelations.birthPlace as any).lon,
-        tz: (updatedProfileWithRelations.birthPlace as any).tz
+        id: updatedProfileWithRelations.birthPlace.id,
+        city: updatedProfileWithRelations.birthPlace.city,
+        country: updatedProfileWithRelations.birthPlace.country,
+        lat: updatedProfileWithRelations.birthPlace.lat,
+        lng: updatedProfileWithRelations.birthPlace.lon,
+        tz: updatedProfileWithRelations.birthPlace.tz
       } : null,
       astrologicalData: updatedProfileWithRelations.astrologicalData ? {
-        chartData: (updatedProfileWithRelations.astrologicalData as any).chartData,
-        createdAt: (updatedProfileWithRelations.astrologicalData as any).createdAt,
+        chartData: updatedProfileWithRelations.astrologicalData.chartData,
+        createdAt: updatedProfileWithRelations.astrologicalData.createdAt,
       } : null
     };
 

@@ -80,11 +80,13 @@ export function ChartViewer({
       setError(`Error processing chart data: ${err instanceof Error ? err.message : 'Invalid data format'}`);
     }
 
+    // Store the current ref value in a variable for cleanup
+    const currentChartContainer = chartContainerRef.current;
+    
     // Cleanup function
     return () => {
-      const chartContainer = chartContainerRef.current;
-      if (chartContainer) {
-        chartContainer.innerHTML = '';
+      if (currentChartContainer) {
+        currentChartContainer.innerHTML = '';
       }
       chartInstance.current = null;
     };
