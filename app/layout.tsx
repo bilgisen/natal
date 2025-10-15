@@ -10,17 +10,17 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "Horozz",
-    template: "Horozz - %s",
+    default: "Zodapp.com",
+    template: "Zodapp.com - %s",
   },
   description:
-    "A modern, full-stack Next.js starter kit with authentication, payments, and dashboard. Built with TypeScript, Tailwind CSS, and shadcn/ui.",
+    "Create scientific birth charts for yourself and your loved ones. Ask Gemini anything you're curious about regarding your cosmic profile",
   openGraph: {
-    title: "Horozz",
+    title: "Zodapp.com",
     description:
-      "A modern, full-stack Next.js starter kit with authentication, payments, and dashboard. Built with TypeScript, Tailwind CSS, and shadcn/ui.",
-    url: "https://horozz.com",
-    siteName: "Horozz",
+      "Create scientific birth charts for yourself and your loved ones. Ask Gemini anything you're curious about regarding your cosmic profile",
+    url: "https://zodapp.com",
+    siteName: "Zodapp.com",
     images: [
       {
         url: "https://jdj14ctwppwprnqu.public.blob.vercel-storage.com/nsk-w9fFwBBmLDLxrB896I4xqngTUEEovS.png",
@@ -47,7 +47,7 @@ export default function RootLayout({
           strategy="afterInteractive"
         />
       </head>
-      <body>
+      <body suppressHydrationWarning={true}>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"

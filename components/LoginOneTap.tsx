@@ -1,4 +1,3 @@
-// LoginOneTap component - Handles Google One Tap authentication
 "use client";
 
 import { useEffect, useState } from "react";
@@ -13,8 +12,9 @@ export default function LoginOneTap() {
   const { data } = authClient.useSession();
   const [initialized, setInitialized] = useState(false);
 
+  // Tüm hook'ları erken return'den önce çağırmalıyız
   useEffect(() => {
-    if (data?.session?.userId) return; // zaten girişli
+    if (data?.session?.userId) return; // Zaten girişli
     if (typeof window === "undefined") return;
 
     const scriptId = "google-one-tap";
@@ -31,6 +31,11 @@ export default function LoginOneTap() {
     script.onload = initGoogle;
     document.head.appendChild(script);
   }, [data]);
+
+  // Eğer kullanıcı zaten giriş yapmışsa hiçbir şey render etme
+  if (data?.session?.userId) {
+    return null;
+  }
 
   function initGoogle() {
     if (!window.google?.accounts?.id || initialized) return;

@@ -1,16 +1,16 @@
 import FooterSection from "@/components/homepage/footer";
 import HeroSection from "@/components/homepage/hero-section";
 import Integrations from "@/components/homepage/integrations";
-import { getSubscriptionDetails } from "@/lib/subscription";
-import PricingTable from "./pricing/_component/pricing-table";
 import { CurrentTransitsWidget } from "@/components/astrology/CurrentTransitsWidget";
 import { DailyHoroscopeWidget } from "@/components/astrology/DailyHoroscopeWidget";
+import Cta from "@/components/homepage/cta";
+import Navbar from "@/components/navbar/navbar";
 
 export default async function Home() {
-  const subscriptionDetails = await getSubscriptionDetails();
 
   return (
     <>
+      <Navbar />
       <HeroSection />
       <Integrations />
       <div className="container mx-auto px-4 py-8 space-y-16">
@@ -18,7 +18,7 @@ export default async function Home() {
         <DailyHoroscopeWidget />
       </div>
 
-      <PricingTable subscriptionDetails={subscriptionDetails} />
+      <Cta/>
       <FooterSection />
     </>
   );

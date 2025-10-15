@@ -30,9 +30,9 @@ export default function SpaceHero() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-md md:text-xl text-foreground tracking-wider mb-3"
+          className="text-md md:text-xl text-foreground tracking-wider mb-3 mt-6"
         >
-          Welcome to natalai
+          Welcome to Natalmark
         </motion.h3>
 
         <motion.h1

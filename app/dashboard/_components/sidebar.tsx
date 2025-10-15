@@ -26,13 +26,13 @@ const navItems: NavItem[] = [
     icon: HomeIcon,
   },
   {
-    label: "Chat",
-    href: "/dashboard/chat",
+    label: "Profiles",
+    href: "/dashboard/profiles",
     icon: MessageCircleIcon,
   },
   {
-    label: "Upload",
-    href: "/dashboard/upload",
+    label: "Zodiacs",
+    href: "/zodiacs",
     icon: Upload,
   },
   {
@@ -55,7 +55,7 @@ export default function DashboardSideBar() {
             className="flex items-center font-semibold hover:cursor-pointer"
             href="/"
           >
-            <span>Nextjs Starter Kit</span>
+            <span>natalmark</span>
           </Link>
         </div>
 
