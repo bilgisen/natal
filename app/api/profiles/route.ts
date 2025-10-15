@@ -28,16 +28,29 @@ export async function GET() {
   try {
     const session = await getCurrentSession();
     
-    // Sort by creation date in descending order (newest first)
+    // First, get all profiles for the user
     const userProfiles = await db.query.profiles.findMany({
       where: eq(profiles.userId, session.user.id),
-      with: {
-        birthPlace: true
-      },
       orderBy: [desc(profiles.createdAt)]
     });
 
-    return NextResponse.json(userProfiles);
+    // Then, fetch birth places for profiles that have a birthPlaceId
+    const profilesWithPlaces = await Promise.all(userProfiles.map(async (profile) => {
+      if (!profile.birthPlaceId) {
+        return { ...profile, birthPlace: null };
+      }
+      
+      const place = await db.query.birthPlaces.findFirst({
+        where: eq(birthPlaces.id, profile.birthPlaceId)
+      });
+      
+      return {
+        ...profile,
+        birthPlace: place || null
+      };
+    }));
+
+    return NextResponse.json(profilesWithPlaces);
   } catch (error: unknown) {
     console.error('Error fetching profiles:', error);
     if (error instanceof Error && error.message === 'Unauthorized') {

@@ -8,14 +8,29 @@ interface GoogleCredentialResponse {
   select_by: string;
 }
 
+// GoogleOneTap interface is now defined in types/global.d.ts
+
 export default function LoginOneTap() {
   const { data } = authClient.useSession();
   const [initialized, setInitialized] = useState(false);
 
-  // Tüm hook'ları erken return'den önce çağırmalıyız
+  // Cancel Google One Tap when user logs in
   useEffect(() => {
-    if (data?.session?.userId) return; // Zaten girişli
+    if (data?.session?.userId) {
+      // Use type assertion to help TypeScript
+      const google = window.google as any;
+      if (google?.accounts?.id?.cancel) {
+        google.accounts.id.cancel();
+      }
+      setInitialized(false);
+    }
+  }, [data?.session?.userId]);
+
+  // Initialize Google One Tap for logged out users
+  useEffect(() => {
+    if (data?.session?.userId) return; // Already logged in
     if (typeof window === "undefined") return;
+    if (initialized) return; // Already initialized
 
     const scriptId = "google-one-tap";
     if (document.getElementById(scriptId)) {
@@ -30,38 +45,48 @@ export default function LoginOneTap() {
     script.defer = true;
     script.onload = initGoogle;
     document.head.appendChild(script);
-  }, [data]);
+  }, [data?.session?.userId, initialized]);
 
-  // Eğer kullanıcı zaten giriş yapmışsa hiçbir şey render etme
+  // If user is already logged in, don't render anything
   if (data?.session?.userId) {
     return null;
   }
 
   function initGoogle() {
-    if (!window.google?.accounts?.id || initialized) return;
+    // Use type assertion to help TypeScript
+    const google = window.google as any;
+    
+    if (!google?.accounts?.id || initialized) return;
+    
     if (!process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID) {
       console.error("Missing NEXT_PUBLIC_GOOGLE_CLIENT_ID");
       return;
     }
 
-    window.google.accounts.id.initialize({
-      client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-      callback: handleCredentialResponse,
-      auto_select: true,
-      ux_mode: "popup",
-      cancel_on_tap_outside: false,
-    });
+    try {
+      // Initialize Google One Tap
+      google.accounts.id.initialize({
+        client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+        callback: handleCredentialResponse,
+        auto_select: true,
+        ux_mode: "popup",
+        cancel_on_tap_outside: false,
+      });
 
-    window.google.accounts.id.prompt((notification) => {
-      if (notification.isNotDisplayed()) {
-        console.log("One Tap not displayed:", notification.getNotDisplayedReason());
-      }
-      if (notification.isDismissedMoment()) {
-        console.log("One Tap dismissed:", notification.getDismissedReason());
-      }
-    });
+      // Show the One Tap prompt
+      google.accounts.id.prompt((notification: any) => {
+        if (notification.isNotDisplayed()) {
+          console.log("One Tap not displayed:", notification.getNotDisplayedReason?.() || 'Unknown reason');
+        }
+        if (notification.isDismissedMoment?.()) {
+          console.log("One Tap dismissed:", notification.getDismissedReason?.() || 'User dismissed');
+        }
+      });
 
-    setInitialized(true);
+      setInitialized(true);
+    } catch (error) {
+      console.error("Error initializing Google One Tap:", error);
+    }
   }
 
   async function handleCredentialResponse(response: GoogleCredentialResponse) {
@@ -82,5 +107,5 @@ export default function LoginOneTap() {
     }
   }
 
-  return null; // Görsel element yok
+  return null; // No visual element
 }
